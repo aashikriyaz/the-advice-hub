@@ -48,6 +48,7 @@ const ProblemForm = () => {
     defaultValues: {
       title: "",
       description: "",
+      category: undefined,
       isAnonymous: true,
       name: "",
       email: "",
@@ -59,14 +60,21 @@ const ProblemForm = () => {
   const onSubmit = async (data: FormValues) => {
     setSubmitting(true);
     try {
-      // If anonymous, remove name and email
-      if (data.isAnonymous) {
-        data.name = undefined;
-        data.email = undefined;
-      }
+      // Ensure required fields are present before submitting
+      const problemData = {
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        isAnonymous: data.isAnonymous,
+        // Only include name and email if not anonymous
+        ...(data.isAnonymous ? {} : {
+          name: data.name,
+          email: data.email,
+        })
+      };
       
       // Submit problem to "database"
-      submitProblem(data);
+      submitProblem(problemData);
       
       toast({
         title: "Problem submitted successfully",
